@@ -174,7 +174,7 @@ function carnivoreDraw(context) {
 
 function carnivoreAI() {
   this.reproductionCooldown--;
-  this.energy -= 5;
+  this.energy -= 9;
   this.life--;
 
   // TODO make this in another function?
@@ -196,11 +196,18 @@ function carnivoreAI() {
     return;
   }
 
+  if (this.life < this.reproductionCooldown) {
+    // old and waits to die
+    return;
+  }
+
   if (this.digestion) {
     this.digestion--;
   } else if (this.reproductionCooldown <= 0 && this.energy > 5000) {  // breed
     console.log('reproduced');
     var na = new Animal(this.x, this.y, this.color.mutate(game.config.animalMutation), this.def);
+    na.energy -= 75;
+    na.life += 50;
     this.energy = 2000;
     this.reproductionCooldown = 300;
     game.animals.push(na);
@@ -208,16 +215,23 @@ function carnivoreAI() {
     this.move(); 
   }
 }
-// TODO cannibalize if hungry
+
 function carnivoreMove() {
   if (this.target) {
     //console.log('have target');
-    var t = this.moveTarget(this.target);
+    var t = false;
+    if (this.life%4 > 0) {
+      var t = this.moveTarget(this.target);
+    } else {
+      var rd = randomDir(this.x, this.y);
+      this.x = rd.x;
+      this.y = rd.y;
+    }
     if (t) {
       //console.log('standing on target');
       var da = deleteAnimal(this.target);
       if (da) {
-        this.digestion = 30;
+        this.digestion = 35;
         game.deaths.predation++;
         this.energy += Math.floor(this.target.energy/2);
         this.target = null;
@@ -247,12 +261,6 @@ function carnivoreMove() {
       var x = randomInt(0, game.max_x);
       var y = randomInt(0, game.max_y);
       this.target = {x: x, y: y};
-
-      /*
-      var rd = randomDir(this.x, this.y);
-      this.x = rd.x;
-      this.y = rd.y;
-      */
     }
   }
 }

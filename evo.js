@@ -99,6 +99,8 @@ function Game(config) {
     var x = randomInt(0, this.max_x);
     var y = randomInt(0, this.max_y);
     var na = new Animal(x, y, new Color(0, 255, 0), carnivore);
+    na.life += 200;
+    na.energy += 400;
     this.animals.push(na);
   }
 
