@@ -26,12 +26,10 @@ Plant.prototype.draw = function(context) {
 }
 Plant.prototype.grow = function() {
   // TODO: could use a huge rethink
-  var r = randomInt(0, 5);
   if (this.size < 100) {
-    this.size += r;
+    this.size += randomInt(0, 5);
     game.rerenderRq(this);
-  }
-  if (this.size >= 100) {
+  } else {
     var d = randomDir(this.x, this.y);
     var p = game.getPlant(d.x, d.y);
     if (!p) {
@@ -46,8 +44,6 @@ Plant.prototype.grow = function() {
       }
       game.plants[d.x][d.y] = np;
       game.rerenderRq(this);
-    } else {
-      this.size = 100;
     }
   }
 }

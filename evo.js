@@ -8,6 +8,8 @@
 // make it possible to run many simulations side by side!
 // live changing size of the map
 // animals non-grid based
+// larger map than viewsize
+// tick and render speed not dependent on javascripts scheduler
 var screenW = document.body.clientWidth;
 var screenH = document.body.clientHeight;
 
@@ -395,6 +397,7 @@ function createCarnivore(x, y) {
   createAnimal(x, y, carnivore);
 }
 
+// TODO click draggable nuke size
 function nuke(x, y) {
   console.log('Hand of God nuked', x, y);
   var r = 10;
