@@ -11,12 +11,18 @@ stats
 </div>
 <div id="message"></div>
 <div id="speed">
-<button onClick="uiSetSpeed(0, this)"><i class="fa fa-pause"></i></button>
+<button onClick="uiSetSpeed(0, this)" id="pause"><i class="fa fa-pause"></i></button>
 <button onClick="uiSetSpeed(1000, this)"><i class="fa fa-step-forward"></i></button>
 <button onClick="uiSetSpeed(50, this)"><i class="fa fa-play"></i></button>
-<button onClick="uiSetSpeed(16, this)" class="selected-btn"><i class="fa fa-forward"></i></button>
+<button onClick="uiSetSpeed(16, this)" class="selected-speed-btn"><i class="fa fa-forward"></i></button>
 <button onClick="uiSetSpeed(1, this)"><i class="fa fa-fast-forward"></i></button>
 </div>
+<div id="hand">
+Hand of God<br>
+<button onClick="uiHandSelect('herbivore', this)" class="selected-hand-btn">Herbivore</button><br>
+<button onClick="uiHandSelect('carnivore', this)">Carnivore</button><br>
+<button onClick="uiHandSelect('nuke', this)">Nuke</button><br>
+<button onClick="uiHandSelect('inspect', this)">Inspect</button><br>
 <script src="plants.js"></script>
 <script src="animals.js"></script>
 <script src="animals/herbivore.js"></script>

@@ -26,6 +26,21 @@ transform: translate(-50%, -50%);
 display: none;
 }
 
+#hand {
+position: absolute;
+bottom: 20px;
+right: 20px;
+padding: 5px 5px;
+font-size: 14px;
+font-weight: bold;
+text-align: center;
+}
+
+#hand button {
+margin-top: 2px;
+width: 100%;
+}
+
 #stats {
 position: absolute;
 top: 20px;
@@ -61,6 +76,7 @@ text-align: center;
 text-decoration: none;
 display: inline-block;
 font-size: 16px;
+font-weight: bold;
 border-radius: 2px;
 }
 
@@ -72,6 +88,10 @@ button:active {
 background: rgba(150, 150, 150, .8);
 }
 
-.selected-btn {
+.selected-speed-btn {
+background: rgba(100, 100, 100, .8);
+}
+
+.selected-hand-btn {
 background: rgba(100, 100, 100, .8);
 }

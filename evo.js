@@ -1,6 +1,5 @@
 //  --- Feature Wishlist ---
-// Herbivores and Carnivores (and Omnivores?)
-// Control panel (hand of god)
+// pretty up the animal functions, too much code in large functions now
 // Help Box
 // Optionally skip rendering frames to increase ticks per second
 // generalized, importable/exportable types
@@ -8,7 +7,7 @@
 // do experiments with 0 mutation systems, like black/white plants and animals
 // make it possible to run many simulations side by side!
 // live changing size of the map
-// more of the config should be ratios based on screen size, like a plantratio
+// animals non-grid based
 var screenW = document.body.clientWidth;
 var screenH = document.body.clientHeight;
 
@@ -107,7 +106,8 @@ function Game(config) {
   this.deaths = {
     oldage: 0,
     starvation: 0,
-    predation: 0
+    predation: 0,
+    nuke: 0
   }
 
   this.lastRenderTime = 0;
@@ -190,6 +190,7 @@ Game.prototype.tick = function () {
                            "Starvation: " + this.deaths.starvation + "<br>" +
                            "Old age: " + this.deaths.oldage + "<br>" +
                            "Predation: " + this.deaths.predation + "<br>" +
+                           "Nuked: " + this.deaths.nuke + "<br>" +
                            "Click to restart";
     messagediv.style.display = "block";
     this.stop();
@@ -315,6 +316,7 @@ function copyCfg(cfg) {
   return JSON.parse(JSON.stringify(cfg));   // weird way to copy object
 }
 
+var handFunction = createHerbivore;
 document.addEventListener("click", function (e) {
   if (e.toElement == messagediv && !game.running) {
     messagediv.style.display = "none";
@@ -325,40 +327,108 @@ document.addEventListener("click", function (e) {
       messagediv.style.display = "none";
       game.start();
     }
-    var p = game.getPlant(Math.floor(e.pageX/game.config.tilesize),
-                          Math.floor(e.pageY/game.config.tilesize));
-    if (p) {
-      var a = new Animal(p.x, p.y, p.color, herbivore);
-      game.animals.push(a);
-      console.log("Mouse click created:", a);
-      game.render();
-    }
+
+    var x = Math.floor(e.pageX/game.config.tilesize);
+    var y = Math.floor(e.pageY/game.config.tilesize);
+    handFunction(x, y);
   }
 });
 
-// TODO: fix stuck buttons
-var prevbtn;
+var prevspdbtn = document.getElementsByClassName("selected-speed-btn")[0];
+var pausebtn = document.getElementById("pause");
 function uiSetSpeed(speed, caller) {
-  if (speed == 0 && game.running) {
-    prevbtn = document.getElementsByClassName("selected-btn")[0];
-    caller.classList.add("selected-btn");
+  if (speed == 0 && game.running) { // puase button selected
+    pausebtn.classList.add("selected-speed-btn");
     game.stop();
-  } else if (speed == 0) {
-    caller.classList.remove("selected-btn");
-    prevbtn.classList.add("selected-btn");
+  } else if (speed == 0) { // pause button re-selected
+    pausebtn.classList.remove("selected-speed-btn");
+    prevspdbtn.classList.add("selected-speed-btn");
     game.start();
-  } else {
-    var buttons = document.getElementsByClassName("selected-btn");
-    for (var i = 0; i < buttons.length; i++) {
-      buttons[i].classList.remove("selected-btn");
-    }
-    prevbtn = caller;
-    caller.classList.add("selected-btn");
+  } else { // other button selected
+    pausebtn.classList.remove('selected-speed-btn');
+    prevspdbtn.classList.remove('selected-speed-btn');
+    prevspdbtn = caller;
+    caller.classList.add("selected-speed-btn");
     game.stop();
     game.config.gamespeed = speed;
     cfg.gamespeed = speed;
     game.start();
   }
+}
+
+var prevhandbtn = document.getElementsByClassName("selected-hand-btn")[0];
+function uiHandSelect(name, caller) {
+  if (name == "herbivore") {
+    handFunction = createHerbivore;
+  } else if (name == 'carnivore') {
+    handFunction = createCarnivore;
+  } else if (name == 'nuke') {
+    handFunction = nuke;
+  } else if (name == 'inspect') {
+    handFunction = inspect;
+  }
+
+  prevhandbtn.classList.remove("selected-hand-btn");
+  caller.classList.add("selected-hand-btn");
+  prevhandbtn = caller;
+}
+
+function createAnimal(x, y, type) {
+  var p = game.getPlant(x, y);
+  var na;
+
+  if (p) {
+    na = new Animal(p.x, p.y, p.color, type);
+  } else {
+    na = new Animal(x, y, new Color(), type);
+  }
+  game.animals.push(na);
+  console.log("Hand of God created:", na);
+  game.render();
+}
+
+function createHerbivore(x, y) {
+  createAnimal(x, y, herbivore);
+}
+
+function createCarnivore(x, y) {
+  createAnimal(x, y, carnivore);
+}
+
+function nuke(x, y) {
+  console.log('Hand of God nuked', x, y);
+  var r = 10;
+  for (var i = 0; i <= game.max_x; i++) {
+    for (var j = 0; j <= game.max_y; j++) {
+      var a = x-i;
+      var b = y-j;
+      if (a*a + b*b < r*r) {
+        game.rerenderRq(new RerenderSq(i, j));
+        var p = game.getPlant(i, j);
+        if (p) {
+          p.size = -1;
+          game.plants[p.x][p.y] = null;
+          game.plantsAlive--;
+        }
+      }
+    }
+  }
+
+  game.animals.forEach((ani) => {
+    var a = x - ani.x;
+    var b = y - ani.y;
+    if (a*a + b*b < r*r) {
+      game.rerenderRq(new RerenderSq(ani.x, ani.y));
+      game.deaths.nuke++;
+      deleteAnimal(ani);
+    }
+  });
+
+  game.render();
+}
+
+function inspect(x, y) {
+  // TODO
 }
 
 game = new Game(cfg);

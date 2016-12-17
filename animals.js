@@ -167,7 +167,7 @@ function carnivoreDraw(context) {
   context.lineTo(topx, topy);
   context.fillStyle = this.color.toString();
   context.fill();
-  context.lineWidth = 0.3;
+  context.lineWidth = 1;
   context.strokeStyle = 'black';
   context.stroke();
 }
@@ -183,14 +183,14 @@ function carnivoreAI() {
   game.rerenderRq(p != null ? p : new RerenderSq(this.x, this.y));
 
   if (this.life <= 0) {
-    console.log('died of old age');
+    console.log('died of old age', this.energy, 'energy left');
     game.deaths.oldage++;
     deleteAnimal(this);
     return;
   }
 
   if (this.energy <= 0) {
-    console.log('died of starvation');
+    console.log('died of starvation', this.life, 'life left');
     game.deaths.starvation++;
     deleteAnimal(this);
     return;
@@ -231,6 +231,9 @@ function carnivoreMove() {
       //console.log('standing on target');
       var da = deleteAnimal(this.target);
       if (da) {
+        if (this.target.def == this.def) {
+          console.log('CANNIBAL!'); // TODO only cannibalize if there is no other food source
+        }
         this.digestion = 35;
         game.deaths.predation++;
         this.energy += Math.floor(this.target.energy/2);
@@ -245,7 +248,10 @@ function carnivoreMove() {
     var tar;
     var me = this;
     game.animals.forEach(function (a) {
-      if (a.def != me.def) {
+      if (a == me) {
+        return;
+      }
+      if (a.def != me.def || me.energy < 200) {
         var d = (a.x - me.x)*(a.x - me.x) + (a.y - me.y)*(a.y - me.y);
         if (!a.targeted && d < game.config.viewDistance && d < dmin) {
           tar = a;
