@@ -1,0 +1,10 @@
+TODO:
+* 
+
+Big Ideas:
+* move colors to HSV/HSL
+  * remove carnivores and let all animals eat other animals
+    * carnivore factor? how efficient an animals is at eating grass/meat
+  * allow grass to regrow with the same color
+    * let the animals cultivate a preferred color into another color
+	* or let animals destroy plants they don't want to eat

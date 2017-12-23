@@ -10,6 +10,10 @@
 // animals non-grid based
 // larger map than viewsize
 // tick and render speed not dependent on javascripts scheduler
+//   use setTimeout instead, enable a stop counter that counts down frames until stop
+//   1 for pause command, 10-60 for extinction (to let plants regrow before rendering stops)
+//   this would be a good way to add a scheduler independent turbo-mode
+
 var screenW = document.body.clientWidth;
 var screenH = document.body.clientHeight;
 
